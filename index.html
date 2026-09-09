@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171820">
+<meta name="description" content="Escuchá sikodark radio en directo y descubrí la música que ya sonó.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="apple-icon.png">
+<link rel="apple-touch-icon" href="apple-icon.png">
+<title>sikodark radio</title>
+<style>
+:root{color-scheme:dark;--bg:#171820;--card:#22232b;--secondary:#2c2d35;--text:#f5f5f7;--muted:#a5a6ad;--primary:#ff8a24;--border:rgba(255,255,255,.1);--radius:18px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 16px}
+.wrap{width:100%;max-width:448px}.card{border:1px solid var(--border);background:var(--card);border-radius:28px;padding:24px;box-shadow:0 20px 55px rgba(0,0,0,.35)}
+@media(min-width:640px){.card{padding:32px}}
+.top{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px}.brand img{width:36px;height:36px;border-radius:50%;object-fit:cover}.eyebrow,.mono{font-family:monospace}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}.brand-name{font-size:14px;font-weight:700;margin-top:2px}
+.status{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 11px;font:11px monospace;text-transform:uppercase;letter-spacing:.08em;background:var(--secondary);color:var(--muted)}.status.live{background:rgba(255,138,36,.14);color:var(--primary)}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.live .dot{background:var(--primary);animation:pulse 1.2s infinite}@keyframes pulse{50%{opacity:.35}}
+.cover{position:relative;margin-top:24px;aspect-ratio:1;border-radius:18px;overflow:hidden;background:var(--secondary)}.cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.eq{position:absolute;left:0;right:0;bottom:0;height:34%;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:32px;background:linear-gradient(to top,rgba(0,0,0,.72),transparent)}.bar{width:10px;height:12px;border-radius:8px;background:var(--primary);opacity:.4}.playing .bar{opacity:1;animation:bounce .8s ease-in-out infinite alternate}.playing .bar:nth-child(2){animation-delay:.09s}.playing .bar:nth-child(3){animation-delay:.18s}.playing .bar:nth-child(4){animation-delay:.27s}.playing .bar:nth-child(5){animation-delay:.36s}.playing .bar:nth-child(6){animation-delay:.45s}.playing .bar:nth-child(7){animation-delay:.54s}.playing .bar:nth-child(8){animation-delay:.63s}.playing .bar:nth-child(9){animation-delay:.72s}@keyframes bounce{to{height:75%}}
+.now{margin-top:24px;min-height:64px;text-align:center}.now .eyebrow{margin-bottom:5px}.title{margin:0;font-size:19px;font-weight:800;line-height:1.2}.artist{margin:5px 0 0;color:var(--muted);font-size:14px}
+.controls{margin-top:24px;display:flex;align-items:center;gap:16px}.play{width:64px;height:64px;flex:0 0 64px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:#191919;cursor:pointer;box-shadow:0 8px 25px rgba(255,138,36,.2);transition:transform .15s}.play:hover{transform:scale(1.05)}.play svg{width:28px;height:28px;fill:currentColor}.volume{display:flex;align-items:center;gap:12px;flex:1}.icon-btn{border:0;background:none;color:var(--muted);cursor:pointer;padding:3px;display:grid;place-items:center}.icon-btn:hover{color:var(--text)}input[type=range]{width:100%;accent-color:var(--primary)}
+.install{margin-top:24px;width:100%;padding:12px;border:1px solid var(--border);border-radius:999px;background:var(--secondary);color:var(--text);font-weight:700;cursor:pointer}.install:hover{background:#34353d}
+.history{margin-top:24px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.history h2{font-size:18px;margin:0;font-weight:800}.history p.sub{font-size:11px;color:var(--muted);margin:5px 0 0}.count{padding:6px 11px;border-radius:999px;background:var(--secondary);color:var(--muted);font:11px monospace;white-space:nowrap}.history-grid{margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.empty{grid-column:1/-1;border:1px dashed var(--border);border-radius:16px;padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}.track{overflow:hidden;border-radius:12px;background:var(--secondary)}.track-art{position:relative;aspect-ratio:1}.track-art img{width:100%;height:100%;object-fit:cover;display:block}.rank{position:absolute;left:8px;top:8px;border-radius:999px;background:rgba(23,24,32,.92);padding:4px 7px;font:11px monospace;font-weight:700}.track-info{padding:10px}.track-title,.track-artist{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-title{font-size:13px;font-weight:700}.track-artist{font-size:11px;color:var(--muted);margin-top:3px}footer{color:var(--muted);text-align:center;font:11px monospace}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<main>
+<div class="wrap">
+<section class="card" aria-label="Reproductor de radio">
+<audio id="audio" preload="none"></audio>
+<div class="top">
+  <div class="brand"><img id="brandLogo" src="logo-radio.png" alt="sikodark"><div><div class="eyebrow">Radio online</div><div class="brand-name">sikodark</div></div></div>
+  <div id="status" class="status"><span class="dot"></span><span id="statusText">Detenido</span></div>
+</div>
+<div id="coverBox" class="cover">
+  <img id="cover" src="logo-radio.png" alt="Logo de sikodark">
+  <div id="eq" class="eq"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+</div>
+<div class="now"><div class="eyebrow">Sonando ahora</div><p id="title" class="title">Conectando…</p><p id="artist" class="artist"></p></div>
+<div class="controls">
+  <button id="play" class="play" aria-label="Reproducir"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></button>
+  <div class="volume">
+    <button id="mute" class="icon-btn" aria-label="Silenciar"><svg id="volIcon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M19 9a5 5 0 0 1 0 6"/><path d="M16.5 7.5a8 8 0 0 1 0 9"/></svg></button>
+    <input id="volume" type="range" min="0" max="1" step=".01" value=".8" aria-label="Volumen">
+  </div>
+</div>
+<button id="install" class="install hidden">⇩ &nbsp; Instalar app</button>
+</section>
+
+<section class="card history" aria-labelledby="history-title">
+<div class="history-head"><div><h2 id="history-title">◉ &nbsp;Reproducidos recientemente</h2><p class="sub">Últimas canciones reproducidas</p></div><span id="count" class="count">0/10 temas</span></div>
+<div id="history" class="history-grid"><p class="empty">Las canciones aparecerán aquí cuando empieces a escuchar la radio.</p></div>
+</section>
+</div>
+<footer>sikodark radio · música en directo</footer>
+</main>
+
+<script>
+/* ===== CONFIGURACIÓN PRINCIPAL ===== */
+const STREAM_URL = "https://stream.zeno.fm/xdkqr4btptutv";
+const LOGO = "logo-radio.png";
+const MAX_HISTORY = 10;
+
+/*
+  IMPORTANTE:
+  En Next.js, /api/metadata y /api/artwork eran rutas del servidor.
+  En esta versión HTML pura intentamos usar Zeno y Deezer directamente.
+  Si el navegador bloquea CORS para metadata, el reproductor seguirá funcionando
+  pero "Sonando ahora" necesitará un proxy externo/CORS.
+*/
+const ZENO_METADATA_URL = "https://api.zeno.fm/mounts/metadata/subscribe/xdkqr4btptutv";
+const DEEZER_URL = "https://api.deezer.com/search";
+
+const audio=document.getElementById("audio"), play=document.getElementById("play"), titleEl=document.getElementById("title");
+const artistEl=document.getElementById("artist"), coverEl=document.getElementById("cover"), status=document.getElementById("status");
+const statusText=document.getElementById("statusText"), volume=document.getElementById("volume"), mute=document.getElementById("mute");
+const historyEl=document.getElementById("history"), countEl=document.getElementById("count"), install=document.getElementById("install"), eq=document.getElementById("eq");
+let isPlaying=false,isLoading=false,muted=false,cover=null,history=JSON.parse(localStorage.getItem("sikodark-history")||"[]");
+audio.volume=.8;
+
+function setPlaying(v){isPlaying=v;status.classList.toggle("live",v);statusText.textContent=v?"En vivo":"Detenido";eq.classList.toggle("playing",v);play.innerHTML=isLoading?spinner():v?pauseIcon():playIcon();play.setAttribute("aria-label",v?"Pausar":"Reproducir")}
+function spinner(){return '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8" opacity=".25"/><path d="M20 12a8 8 0 0 1-8 8"/></svg>'}
+function playIcon(){return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+function pauseIcon(){return '<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>'}
+
+async function startPlayback(){
+  try{
+    isLoading=true; play.innerHTML=spinner();
+    if(!audio.src) audio.src=STREAM_URL;
+    await audio.play();
+  }catch(e){isLoading=false;setPlaying(false);console.error("No se pudo reproducir:",e)}
+}
+function stopPlayback(){audio.pause();setPlaying(false);isLoading=false}
+play.onclick=()=>isPlaying?stopPlayback():startPlayback();
+audio.onplaying=()=>{isLoading=false;setPlaying(true);addCurrentToHistory()};
+audio.onwaiting=()=>{isLoading=true;play.innerHTML=spinner()};
+audio.onpause=()=>{if(!audio.ended){isLoading=false;setPlaying(false)}};
+audio.onerror=()=>{isLoading=false;setPlaying(false)};
+
+volume.oninput=()=>{audio.volume=Number(volume.value);muted=false;audio.muted=false};
+mute.onclick=()=>{muted=!muted;audio.muted=muted;mute.innerHTML=muted?'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m23 9-6 6M17 9l6 6"/></svg>':'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M19 9a5 5 0 0 1 0 6"/><path d="M16.5 7.5a8 8 0 0 1 0 9"/></svg>'};
+
+function parseTitle(raw){raw=(raw||"").trim();if(!raw)return{title:"En vivo",artist:null};let i=raw.indexOf(" - ");return i>0?{artist:raw.slice(0,i).trim(),title:raw.slice(i+3).trim()}:{title:raw,artist:null}}
+function setTrack(t){
+  titleEl.textContent=t.title||"En vivo";
+  artistEl.textContent=t.artist||"";
+  cover=null;
+  coverEl.src=LOGO;
+  updateMediaSession(t,LOGO);
+  if(t.title && t.title!=="En vivo"){
+    fetchCover(t).then(()=>{ if(isPlaying) addCurrentToHistory(); });
+    if(isPlaying) addCurrentToHistory();
+  }
+}
+function addCurrentToHistory(){
+  if(!titleEl.textContent||["Conectando…","En vivo"].includes(titleEl.textContent))return;
+  const item={title:titleEl.textContent,artist:artistEl.textContent||null,cover:cover||LOGO};
+  const same=x=>x.title===item.title&&x.artist===item.artist;
+  if(same(history[0])){
+    history[0]={...history[0],...item,cover:item.cover||history[0].cover||LOGO};
+  } else {
+    history=[item,...history.filter(x=>!same(x))].slice(0,MAX_HISTORY);
+  }
+  localStorage.setItem("sikodark-history",JSON.stringify(history));
+  renderHistory();
+}
+function renderHistory(){
+ countEl.textContent=history.length+"/10 temas";
+ if(!history.length){historyEl.innerHTML='<p class="empty">Las canciones aparecerán aquí cuando empieces a escuchar la radio.</p>';return}
+ historyEl.innerHTML=history.map((x,i)=>`<article class="track"><div class="track-art"><img src="${esc(x.cover||LOGO)}" alt="Carátula de ${esc(x.title)}" onerror="this.onerror=null;this.src='${LOGO}'"><span class="rank">#${i+1}</span></div><div class="track-info"><p class="track-title">${esc(x.title)}</p><p class="track-artist">${esc(x.artist||"sikodark radio")}</p></div></article>`).join("")
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function updateMediaSession(t,art){
+  if(!("mediaSession" in navigator)) return;
+  try{
+    navigator.mediaSession.metadata=new MediaMetadata({
+      title:t.title||"sikodark radio",
+      artist:t.artist||"sikodark radio",
+      album:"sikodark radio",
+      artwork:[
+        {src:art||LOGO,sizes:"512x512"},
+        {src:art||LOGO,sizes:"256x256"},
+        {src:art||LOGO,sizes:"192x192"}
+      ]
+    });
+  }catch(e){ console.warn("Media Session",e); }
+}
+
+function updateHistoryCover(t,url){
+  if(!t.title || ["Conectando…","En vivo"].includes(t.title)) return;
+  const idx=history.findIndex(x=>x.title===t.title && x.artist===t.artist);
+  if(idx>=0){
+    history[idx]={...history[idx],cover:url||LOGO};
+    localStorage.setItem("sikodark-history",JSON.stringify(history));
+    renderHistory();
+  }
+}
+
+async function fetchCover(t){
+  if(!t.title || t.title === "En vivo") return null;
+
+  const query = [t.artist, t.title].filter(Boolean).join(" ");
+
+  // 1) Deezer: portada del álbum
+  try{
+    const q=encodeURIComponent((t.artist?'artist:"'+t.artist+'" ' : '')+'track:"'+t.title+'"');
+    const r=await fetch(DEEZER_URL+"?limit=1&q="+q,{cache:"no-store"});
+    if(r.ok){
+      const d=await r.json(), tr=d.data&&d.data[0];
+      const url=tr && tr.album && (tr.album.cover_xl||tr.album.cover_big||tr.album.cover_medium);
+      if(url){
+        cover=url;
+        coverEl.src=url;
+        updateMediaSession(t,url);
+        updateHistoryCover(t,url);
+        return url;
+      }
+    }
+  }catch(e){ console.warn("Deezer no disponible",e); }
+
+  // 2) iTunes como respaldo para encontrar la portada
+  try{
+    const r=await fetch("https://itunes.apple.com/search?term="+encodeURIComponent(query)+"&entity=song&limit=1",{cache:"no-store"});
+    if(r.ok){
+      const d=await r.json(), tr=d.results&&d.results[0];
+      const url=tr && tr.artworkUrl100 ? tr.artworkUrl100.replace("100x100","600x600") : null;
+      if(url){
+        cover=url;
+        coverEl.src=url;
+        updateMediaSession(t,url);
+        updateHistoryCover(t,url);
+        return url;
+      }
+    }
+  }catch(e){ console.warn("iTunes no disponible",e); }
+
+  cover=null;
+  coverEl.src=LOGO;
+  updateMediaSession(t,LOGO);
+  updateHistoryCover(t,LOGO);
+  return null;
+}
+
+/* Metadata SSE: intento directo desde Zeno */
+function connectMetadata(){
+  try{
+    const source=new EventSource(ZENO_METADATA_URL);
+    source.onmessage=e=>{try{const d=JSON.parse(e.data);if(typeof d.streamTitle==="string")setTrack(parseTitle(d.streamTitle))}catch(_){}};
+    source.onerror=()=>{ console.warn("Zeno metadata: error/CORS. Si abriste index.html como archivo local (content:// o file://), no funcionará; publicado en HTTPS sí puede funcionar."); try{source.close()}catch(_){}; setTimeout(connectMetadata,5000); };
+  }catch(e){}
+}
+
+let deferredPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPrompt=e;install.classList.remove("hidden")});
+install.onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;install.classList.add("hidden")};
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+// Corrige historiales antiguos que tenían el icono equivocado como portada.
+history=history.map(x=>({...x,cover:(x.cover && x.cover!=="apple-icon.png")?x.cover:LOGO}));
+localStorage.setItem("sikodark-history",JSON.stringify(history));
+renderHistory();
+
+// Media Session: controles de la notificación y pantalla bloqueada de Android.
+if("mediaSession" in navigator){
+  try{
+    navigator.mediaSession.setActionHandler("play",()=>startPlayback());
+    navigator.mediaSession.setActionHandler("pause",()=>stopPlayback());
+    navigator.mediaSession.setActionHandler("stop",()=>stopPlayback());
+  }catch(e){}
+}
+
+connectMetadata();
+
+// Si la página está abierta como archivo local, el navegador bloquea las conexiones
+// SSE/CORS necesarias para obtener el now-playing de Zeno.
+if(location.protocol === "file:" || location.protocol === "content:"){
+  console.warn("sikodark: abre esta versión desde GitHub Pages/Netlify/Vercel para obtener metadata y carátulas.");
+}
+
+</script>
+</body>
+</html>
