@@ -1,540 +1,215 @@
-<!DOCTYPE html>
-<html lang="es">
+<html style="margin:0;padding:0;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#171820">
-<meta name="description" content="Escuchá sikodark radio en directo y descubrí la música que ya sonó.">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="apple-icon.png">
-<link rel="apple-touch-icon" href="apple-icon.png">
-<title>sikodark radio</title>
-<style>
-:root{color-scheme:dark;--bg:#171820;--card:#22232b;--secondary:#2c2d35;--text:#f5f5f7;--muted:#a5a6ad;--primary:#ff8a24;--border:rgba(255,255,255,.1);--radius:18px}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-main{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 16px}
-.wrap{width:100%;max-width:448px}.card{border:1px solid var(--border);background:var(--card);border-radius:28px;padding:24px;box-shadow:0 20px 55px rgba(0,0,0,.35)}
-@media(min-width:640px){.card{padding:32px}}
-.top{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px}.brand img{width:36px;height:36px;border-radius:50%;object-fit:cover}.eyebrow,.mono{font-family:monospace}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--muted)}.brand-name{font-size:14px;font-weight:700;margin-top:2px}
-.status{display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 11px;font:11px monospace;text-transform:uppercase;letter-spacing:.08em;background:var(--secondary);color:var(--muted)}.status.live{background:rgba(255,138,36,.14);color:var(--primary)}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.live .dot{background:var(--primary);animation:pulse 1.2s infinite}@keyframes pulse{50%{opacity:.35}}
-.cover{position:relative;margin-top:24px;aspect-ratio:1;border-radius:18px;overflow:hidden;background:var(--secondary)}.cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.eq{position:absolute;left:0;right:0;bottom:0;height:34%;display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:32px;background:linear-gradient(to top,rgba(0,0,0,.72),transparent)}.bar{width:10px;height:12px;border-radius:8px;background:var(--primary);opacity:.4}.playing .bar{opacity:1;animation:bounce .8s ease-in-out infinite alternate}.playing .bar:nth-child(2){animation-delay:.09s}.playing .bar:nth-child(3){animation-delay:.18s}.playing .bar:nth-child(4){animation-delay:.27s}.playing .bar:nth-child(5){animation-delay:.36s}.playing .bar:nth-child(6){animation-delay:.45s}.playing .bar:nth-child(7){animation-delay:.54s}.playing .bar:nth-child(8){animation-delay:.63s}.playing .bar:nth-child(9){animation-delay:.72s}@keyframes bounce{to{height:75%}}
-.now{margin-top:24px;min-height:64px;text-align:center}.now .eyebrow{margin-bottom:5px}.title{margin:0;font-size:19px;font-weight:800;line-height:1.2}.artist{margin:5px 0 0;color:var(--muted);font-size:14px}
-.controls{margin-top:24px;display:flex;align-items:center;gap:16px}.play{width:64px;height:64px;flex:0 0 64px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--primary);color:#191919;cursor:pointer;box-shadow:0 8px 25px rgba(255,138,36,.2);transition:transform .15s}.play:hover{transform:scale(1.05)}.play svg{width:28px;height:28px;fill:currentColor}.volume{display:flex;align-items:center;gap:12px;flex:1}.icon-btn{border:0;background:none;color:var(--muted);cursor:pointer;padding:3px;display:grid;place-items:center}.icon-btn:hover{color:var(--text)}input[type=range]{width:100%;accent-color:var(--primary)}
-.install{margin-top:24px;width:100%;padding:12px;border:1px solid var(--border);border-radius:999px;background:var(--secondary);color:var(--text);font-weight:700;cursor:pointer}.install:hover{background:#34353d}
-.history{margin-top:24px}.history-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.history h2{font-size:18px;margin:0;font-weight:800}.history p.sub{font-size:11px;color:var(--muted);margin:5px 0 0}.count{padding:6px 11px;border-radius:999px;background:var(--secondary);color:var(--muted);font:11px monospace;white-space:nowrap}.history-grid{margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.empty{grid-column:1/-1;border:1px dashed var(--border);border-radius:16px;padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}.track{overflow:hidden;border-radius:12px;background:var(--secondary)}.track-art{position:relative;aspect-ratio:1}.track-art img{width:100%;height:100%;object-fit:cover;display:block}.rank{position:absolute;left:8px;top:8px;border-radius:999px;background:rgba(23,24,32,.92);padding:4px 7px;font:11px monospace;font-weight:700}.track-info{padding:10px}.track-title,.track-artist{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.track-title{font-size:13px;font-weight:700}.track-artist{font-size:11px;color:var(--muted);margin-top:3px}footer{color:var(--muted);text-align:center;font:11px monospace}
-.hidden{display:none}
-.clear-btn{border:1px solid var(--border);background:var(--secondary);color:var(--muted);font-size:11px;padding:5px 10px;border-radius:999px;cursor:pointer;font-family:monospace}
-.clear-btn:hover{color:var(--text);background:#34353d}
-.history-actions{display:flex;align-items:center;gap:8px}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<main>
-<div class="wrap">
-<section class="card" aria-label="Reproductor de radio">
-<audio id="audio" preload="none"></audio>
-<div class="top">
-  <div class="brand"><img id="brandLogo" src="logo-radio.png" alt="sikodark"><div><div class="eyebrow">Radio online</div><div class="brand-name">sikodark</div></div></div>
-  <div id="status" class="status"><span class="dot"></span><span id="statusText">Detenido</span></div>
-</div>
-<div id="coverBox" class="cover">
-  <img id="cover" src="logo-radio.png" alt="Logo de sikodark">
-  <div id="eq" class="eq"><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
-</div>
-<div class="now"><div class="eyebrow">Sonando ahora</div><p id="title" class="title">Conectando…</p><p id="artist" class="artist"></p></div>
-<div class="controls">
-  <button id="play" class="play" aria-label="Reproducir"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></button>
-  <div class="volume">
-    <button id="mute" class="icon-btn" aria-label="Silenciar"><svg id="volIcon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M19 9a5 5 0 0 1 0 6"/><path d="M16.5 7.5a8 8 0 0 1 0 9"/></svg></button>
-    <input id="volume" type="range" min="0" max="1" step=".01" value=".8" aria-label="Volumen">
-  </div>
-</div>
-<button id="install" class="install hidden">⇩ &nbsp; Instalar app</button>
-</section>
-<section class="card history" aria-labelledby="history-title">
-<div class="history-head">
-  <div><h2 id="history-title">◉ &nbsp;Reproducidos recientemente</h2><p class="sub">Últimas canciones reproducidas</p></div>
-  <div class="history-actions">
-    <span id="count" class="count">0/10 temas</span>
-    <button id="clearHistory" class="clear-btn" title="Limpiar historial">Limpiar</button>
-  </div>
-</div>
-<div id="history" class="history-grid"><p class="empty">Las canciones aparecerán aquí cuando empieces a escuchar la radio.</p></div>
-</section>
-</div>
-<footer>sikodark radio · música en directo</footer>
-</main>
-<script>
-/* ===== CONFIGURACIÓN PRINCIPAL ===== */
-const STREAM_URL = "https://stream.zeno.fm/xdkqr4btptutv";
-const LOGO = "logo-radio.png";
-const MAX_HISTORY = 10;
-const ZENO_MOUNT = "xdkqr4btptutv";
+<body style="margin:0;padding:0;background:#171820;color:#f5f5f7;font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
 
-/* URLs de metadata con múltiples fuentes y proxies CORS */
-const CORS_PROXIES = [
-  "https://api.allorigins.win/raw?url=",
-  "https://corsproxy.io/?",
-  "" // intento directo al final
-];
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:24px 16px 40px;box-sizing:border-box;">
+<div style="width:100%;max-width:448px;">
 
-const METADATA_SOURCES = [
-  // StreamAfrica ICY v2
-  () => "https://api-v2.streamafrica.net/icyv2?url=" + encodeURIComponent(STREAM_URL),
-  // Zeno API directa
-  () => "https://api.zeno.fm/mounts/metadata/" + ZENO_MOUNT,
-  // Radio.co / Zeno historia reciente
-  () => "https://api.zeno.fm/mounts/" + ZENO_MOUNT + "/history",
-];
+<!-- ===== REPRODUCTOR PRINCIPAL ===== -->
+<div style="border:1px solid rgba(255,255,255,.1);background:#22232b;border-radius:28px;padding:24px;box-shadow:0 20px 55px rgba(0,0,0,.35);">
 
-const DEEZER_URL = "https://api.deezer.com/search";
-
-const audio=document.getElementById("audio"), play=document.getElementById("play"), titleEl=document.getElementById("title");
-const artistEl=document.getElementById("artist"), coverEl=document.getElementById("cover"), status=document.getElementById("status");
-const statusText=document.getElementById("statusText"), volume=document.getElementById("volume"), mute=document.getElementById("mute");
-const historyEl=document.getElementById("history"), countEl=document.getElementById("count"), install=document.getElementById("install"), eq=document.getElementById("eq");
-const clearHistoryBtn=document.getElementById("clearHistory");
-
-let isPlaying=false,isLoading=false,muted=false,cover=null;
-let currentTrackTitle=null, currentTrackArtist=null;
-let history=[];
-
-/* Cargar historial desde localStorage */
-try{
-  history=JSON.parse(localStorage.getItem("sikodark-history")||"[]");
-  if(!Array.isArray(history)) history=[];
-}catch(e){ history=[]; }
-
-audio.volume=.8;
-
-function setPlaying(v){isPlaying=v;status.classList.toggle("live",v);statusText.textContent=v?"En vivo":"Detenido";eq.classList.toggle("playing",v);play.innerHTML=isLoading?spinner():v?pauseIcon():playIcon();play.setAttribute("aria-label",v?"Pausar":"Reproducir")}
-function spinner(){return '<svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8" opacity=".25"/><path d="M20 12a8 8 0 0 1-8 8"/></svg>'}
-function playIcon(){return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
-function pauseIcon(){return '<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>'}
-
-async function startPlayback(){
-  try{
-    isLoading=true; play.innerHTML=spinner();
-    if(!audio.src) audio.src=STREAM_URL;
-    await audio.play();
-  }catch(e){isLoading=false;setPlaying(false);console.error("No se pudo reproducir:",e)}
-}
-function stopPlayback(){audio.pause();setPlaying(false);isLoading=false}
-
-play.onclick=()=>isPlaying?stopPlayback():startPlayback();
-
-audio.onplaying=()=>{
-  isLoading=false;
-  setPlaying(true);
-  // Intentar guardar en historial si ya tenemos metadata
-  if(currentTrackTitle) addCurrentToHistory();
-};
-audio.onwaiting=()=>{isLoading=true;play.innerHTML=spinner()};
-audio.onpause=()=>{if(!audio.ended){isLoading=false;setPlaying(false)}};
-audio.onerror=()=>{isLoading=false;setPlaying(false)};
-
-volume.oninput=()=>{audio.volume=Number(volume.value);muted=false;audio.muted=false};
-mute.onclick=()=>{muted=!muted;audio.muted=muted;mute.innerHTML=muted?'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m23 9-6 6M17 9l6 6"/></svg>':'<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M19 9a5 5 0 0 1 0 6"/><path d="M16.5 7.5a8 8 0 0 1 0 9"/></svg>'};
-
-/* Botón limpiar historial */
-clearHistoryBtn.onclick=()=>{
-  if(confirm("¿Seguro que quieres borrar el historial de reproducción?")){
-    history=[];
-    localStorage.setItem("sikodark-history","[]");
-    renderHistory();
-  }
-};
-
-function parseTitle(raw){
-  raw=(raw||"").trim();
-  if(!raw)return{title:"En vivo",artist:null};
-  let i=raw.indexOf(" - ");
-  if(i>0) return{artist:raw.slice(0,i).trim(),title:raw.slice(i+3).trim()};
-  // Intentar con "–" (guion largo)
-  i=raw.indexOf(" – ");
-  if(i>0) return{artist:raw.slice(0,i).trim(),title:raw.slice(i+3).trim()};
-  // Intentar con "-" sin espacios
-  i=raw.indexOf("-");
-  if(i>0 && i<raw.length-1) return{artist:raw.slice(0,i).trim(),title:raw.slice(i+1).trim()};
-  return{title:raw,artist:null};
-}
-
-function setTrack(t, artFromApi=null){
-  const nextTitle=(t.title||"En vivo").trim();
-  const nextArtist=(t.artist||"").trim()||null;
-  
-  // Detectar si realmente cambió la canción
-  const trackChanged = nextTitle !== currentTrackTitle || nextArtist !== currentTrackArtist;
-  
-  // Actualizar DOM
-  titleEl.textContent=nextTitle;
-  artistEl.textContent=nextArtist||"";
-  cover=artFromApi||null;
-  coverEl.src=cover||LOGO;
-  
-  // Guardar referencia actual
-  currentTrackTitle = nextTitle;
-  currentTrackArtist = nextArtist;
-  
-  updateMediaSession({title:nextTitle,artist:nextArtist},cover||LOGO);
-  
-  // ✅ GUARDAR EN HISTORIAL SIEMPRE QUE CAMBIE LA CANCIÓN
-  if(trackChanged && nextTitle && !["Conectando…","En vivo","En Vivo","EN VIVO"].includes(nextTitle)){
-    const historyItem = {title:nextTitle, artist:nextArtist, cover:cover||LOGO, ts:Date.now()};
-    upsertHistory(historyItem);
-    // Buscar carátula si no la tenemos
-    if(!cover) fetchCover({title:nextTitle,artist:nextArtist});
-  }
-}
-
-/* ===== FUNCIÓN DE HISTORIAL CORREGIDA ===== */
-function upsertHistory(item){
-  if(!item || !item.title) return;
-  
-  // No guardar títulos genéricos
-  const skipTitles = ["Conectando…","En vivo","En Vivo","EN VIVO","Conectando","Loading...","Loading"];
-  if(skipTitles.includes(item.title.trim())) return;
-  
-  // Normalizar: asegurar que tenga cover
-  item.cover = item.cover || LOGO;
-  
-  // Buscar si ya existe (mismo título y artista)
-  const sameAs = (x) => 
-    x.title.toLowerCase().trim() === item.title.toLowerCase().trim() && 
-    ((x.artist||"").toLowerCase().trim() === (item.artist||"").toLowerCase().trim());
-  
-  const existingIndex = history.findIndex(sameAs);
-  
-  if(existingIndex >= 0){
-    // Ya existe: mover al principio y actualizar cover si es mejor
-    const existing = history[existingIndex];
-    // Si el nuevo item tiene una portada mejor (no es el logo), actualizarla
-    if(item.cover !== LOGO && existing.cover === LOGO){
-      existing.cover = item.cover;
-    }
-    existing.ts = item.ts || Date.now();
-    // Quitar de su posición actual
-    history.splice(existingIndex, 1);
-    // Poner al principio
-    history.unshift(existing);
-  }else{
-    // Nuevo item: agregar al principio
-    history.unshift({...item});
-  }
-  
-  // Limitar a MAX_HISTORY
-  history = history.slice(0, MAX_HISTORY);
-  
-  // Guardar en localStorage
-  try{
-    localStorage.setItem("sikodark-history", JSON.stringify(history));
-  }catch(e){
-    console.warn("No se pudo guardar en localStorage:", e);
-  }
-  
-  // Actualizar UI
-  renderHistory();
-}
-
-function addCurrentToHistory(){
-  if(!currentTrackTitle) return;
-  upsertHistory({
-    title: currentTrackTitle,
-    artist: currentTrackArtist,
-    cover: cover || LOGO,
-    ts: Date.now()
-  });
-}
-
-function renderHistory(){
-  countEl.textContent = history.length + "/" + MAX_HISTORY + " temas";
-  
-  if(!history.length){
-    historyEl.innerHTML = '<p class="empty">Las canciones aparecerán aquí cuando empieces a escuchar la radio.</p>';
-    return;
-  }
-  
-  historyEl.innerHTML = history.map((x,i) => `
-    <article class="track">
-      <div class="track-art">
-        <img src="${esc(x.cover||LOGO)}" alt="Carátula de ${esc(x.title)}" 
-             onerror="this.onerror=null;this.src='${LOGO}'">
-        <span class="rank">#${i+1}</span>
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:9px;">
+      <!-- LOGO SIKODARK EN LA ESQUINA SUPERIOR -->
+      <img src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/667338460afb4a77bfb024b5f6fd3773.jpeg" alt="sikodark" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,138,36,.3);">
+      <div>
+        <div style="font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#a5a6ad;font-family:ui-monospace,Menlo,monospace;">Radio online</div>
+        <div style="font-size:14px;font-weight:700;margin-top:2px;">sikodark</div>
       </div>
-      <div class="track-info">
-        <p class="track-title">${esc(x.title)}</p>
-        <p class="track-artist">${esc(x.artist||"sikodark radio")}</p>
+    </div>
+    <div id="statusBadge" style="display:flex;align-items:center;gap:8px;border-radius:999px;padding:6px 11px;font:11px ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.08em;background:rgba(255,138,36,.14);color:#ff8a24;">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ff8a24;animation:pulse 1.2s infinite;"></span>
+      <span id="statusText">En vivo</span>
+    </div>
+  </div>
+
+  <!-- CARÁTULA PRINCIPAL -->
+  <div style="position:relative;margin-top:24px;width:100%;padding-top:100%;border-radius:20px;overflow:hidden;background:#2c2d35;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);">
+    <img id="coverImg" src="https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/90cc1b3c5c474beb86defef817a4ee76.jpeg" alt="Carátula actual" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;transition:opacity .4s ease;">
+  </div>
+
+  <!-- INFO CANCIÓN -->
+  <div style="margin-top:24px;min-height:64px;text-align:center;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:#a5a6ad;font-family:ui-monospace,Menlo,monospace;margin-bottom:5px;">Sonando ahora</div>
+    <p id="titleNow" style="margin:0;font-size:20px;font-weight:800;line-height:1.25;letter-spacing:-.01em;">Eclipse Serenade</p>
+    <p id="artistNow" style="margin:5px 0 0;color:#a5a6ad;font-size:14px;font-weight:500;">Mountain Echoes</p>
+    <div style="font-size:10px;color:#a5a6ad;font-family:ui-monospace,Menlo,monospace;margin-top:8px;text-align:center;opacity:.6;">via Zeno API</div>
+  </div>
+
+  <!-- CONTROLES -->
+  <div style="margin-top:28px;display:flex;align-items:center;gap:16px;">
+    <button id="playBtn" aria-label="Pausar" style="position:relative;width:68px;height:68px;flex:0 0 68px;border:0;border-radius:50%;display:grid;place-items:center;background:#ff8a24;color:#1a1a1a;cursor:pointer;box-shadow:0 6px 20px rgba(255,138,36,.25);transition:transform .15s,box-shadow .15s;">
+      <div style="position:relative;width:30px;height:30px;display:grid;place-items:center;">
+        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" style="position:absolute;opacity:0;transform:scale(.6);transition:transform .2s,opacity .15s;width:30px;height:30px;">
+          <path d="M7.5 5.14c0-.9 1.03-1.44 1.78-.94l10.5 7.03c.73.49.73 1.55 0 2.04l-10.5 7.03c-.75.5-1.78-.04-1.78-.94V5.14z"/>
+        </svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="position:absolute;opacity:1;transform:scale(1);transition:transform .2s,opacity .15s;width:30px;height:30px;">
+          <rect x="6.5" y="5" width="4" height="14" rx="1.5"/>
+          <rect x="13.5" y="5" width="4" height="14" rx="1.5"/>
+        </svg>
       </div>
-    </article>
-  `).join("");
-}
+    </button>
+    <div style="display:flex;align-items:center;gap:12px;flex:1;">
+      <button id="muteBtn" aria-label="Silenciar" style="border:0;background:none;color:#a5a6ad;cursor:pointer;padding:6px;display:grid;place-items:center;border-radius:12px;transition:color .2s,background .2s;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5 6 9H3v6h3l5 4z"/>
+          <path d="M19 9a5 5 0 0 1 0 6"/>
+          <path d="M16.5 7.5a8 8 0 0 1 0 9"/>
+        </svg>
+      </button>
+      <input type="range" min="0" max="1" step=".01" value=".8" aria-label="Volumen" style="width:100%;height:6px;background:#2c2d35;border-radius:999px;outline:none;cursor:pointer;accent-color:#ff8a24;-webkit-appearance:none;">
+    </div>
+  </div>
 
-function esc(s){
-  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
+  <button id="refreshBtn" style="margin-top:16px;width:100%;padding:10px;border-radius:14px;font-size:12px;border:1px solid rgba(255,255,255,.1);background:#2c2d35;color:#a5a6ad;font-family:ui-monospace,Menlo,monospace;cursor:pointer;transition:color .2s,background .2s;">
+    ↻ Actualizar metadata
+  </button>
 
-function updateMediaSession(t,art){
-  if(!("mediaSession" in navigator)) return;
-  try{
-    navigator.mediaSession.metadata=new MediaMetadata({
-      title:t.title||"sikodark radio",
-      artist:t.artist||"sikodark radio",
-      album:"sikodark radio",
-      artwork:[
-        {src:art||LOGO,sizes:"512x512"},
-        {src:art||LOGO,sizes:"256x256"},
-        {src:art||LOGO,sizes:"192x192"}
-      ]
-    });
-  }catch(e){ console.warn("Media Session",e); }
-}
+</div>
 
-/* ===== BUSCAR CARÁTULAS ===== */
-async function fetchCover(t){
-  if(!t.title || ["En vivo","En Vivo","EN VIVO"].includes(t.title)) return null;
-  
-  const query = [t.artist, t.title].filter(Boolean).join(" ");
-  
-  // Deezer
-  try{
-    const q = encodeURIComponent(query);
-    const r = await fetch(DEEZER_URL + "?limit=5&q=" + q, {cache:"no-store"});
-    if(r.ok){
-      const d = await r.json();
-      const tracks = Array.isArray(d.data) ? d.data : [];
-      const tr = tracks[0];
-      const url = tr?.album?.cover_xl || tr?.album?.cover_big || tr?.album?.cover_medium || tr?.artist?.picture_big || null;
-      if(url){
-        cover = url;
-        coverEl.src = url;
-        updateMediaSession(t, url);
-        // Actualizar el historial con la nueva portada
-        updateHistoryCover(t.title, t.artist, url);
-        return url;
-      }
-    }
-  }catch(e){ console.warn("Deezer no disponible", e); }
-  
-  // iTunes fallback
-  try{
-    const r = await fetch("https://itunes.apple.com/search?term=" + encodeURIComponent(query) + "&entity=song&limit=5", {cache:"no-store"});
-    if(r.ok){
-      const d = await r.json();
-      const tr = (d.results || [])[0];
-      const url = tr?.artworkUrl100?.replace(/\d+x\d+/, "600x600") || null;
-      if(url){
-        cover = url;
-        coverEl.src = url;
-        updateMediaSession(t, url);
-        updateHistoryCover(t.title, t.artist, url);
-        return url;
-      }
-    }
-  }catch(e){ console.warn("iTunes no disponible", e); }
-  
-  return null;
-}
+<!-- ===== HISTORIAL ===== -->
+<div style="margin-top:24px;border:1px solid rgba(255,255,255,.1);background:#22232b;border-radius:28px;padding:24px;box-shadow:0 20px 55px rgba(0,0,0,.35);">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+    <div>
+      <h2 style="font-size:18px;margin:0;font-weight:800;">
+        <span style="color:#ff8a24;">●</span>&nbsp; Reproducidos recientemente
+      </h2>
+      <p style="font-size:11px;color:#a5a6ad;margin:5px 0 0;">Toca el icono para compartir</p>
+    </div>
+    <span style="padding:6px 11px;border-radius:999px;background:#2c2d35;color:#a5a6ad;font:11px ui-monospace,Menlo,monospace;white-space:nowrap;" id="countLabel">5/10 temas</span>
+  </div>
 
-function updateHistoryCover(title, artist, coverUrl){
-  let changed = false;
-  history = history.map(x => {
-    if(x.title.toLowerCase().trim() === title.toLowerCase().trim() &&
-       (x.artist||"").toLowerCase().trim() === (artist||"").toLowerCase().trim() &&
-       x.cover === LOGO){
-      changed = true;
-      return {...x, cover: coverUrl};
-    }
-    return x;
-  });
-  if(changed){
-    try{ localStorage.setItem("sikodark-history", JSON.stringify(history)); }catch(e){}
-    renderHistory();
-  }
-}
+  <div id="historyGrid" style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;"></div>
+</div>
 
-/* ===== NORMALIZAR METADATA ===== */
-function normalizeMetadata(d){
-  if(!d || typeof d !== "object") return null;
-  
-  // Intentar extraer título de varias formas
-  let title = d.title || d.song || d.track || d.TITLE || d.Song || null;
-  let artist = d.artist || d.artists || d.ARTIST || d.Artist || null;
-  let art = d.artwork || d.art || d.cover || d.cover_xl || d.cover_big || d.image || d.picture || null;
-  
-  // Si no hay título pero hay streamTitle
-  if(!title && typeof d.streamTitle === "string") return parseTitle(d.streamTitle);
-  if(!title && typeof d.StreamTitle === "string") return parseTitle(d.StreamTitle);
-  
-  // Si el título contiene " - " y no hay artista, parsear
-  if(title && typeof title === "string" && title.includes(" - ") && !artist){
-    return parseTitle(title);
-  }
-  
-  if(Array.isArray(artist)) artist = artist.join(", ");
-  
-  return title ? {title: String(title).trim(), artist: artist ? String(artist).trim() : null, art: art || null} : null;
-}
+<div style="color:#a5a6ad;text-align:center;font:11px ui-monospace,Menlo,monospace;margin-top:24px;">sikodark radio · música en directo · PWA</div>
 
-/* ===== MERGEAR HISTORIAL DESDE API ===== */
-function mergeApiHistory(items){
-  if(!Array.isArray(items) || items.length === 0) return;
-  
-  // Procesar en orden inverso para que las más nuevas queden al final
-  for(const raw of items.slice(0, MAX_HISTORY).reverse()){
-    const t = normalizeMetadata({
-      title: raw.song || raw.title || raw.track || raw.Song,
-      artist: raw.artist || raw.Artist,
-      artwork: raw.artwork || raw.art || raw.cover || raw.image
-    });
-    if(t?.title){
-      upsertHistory({title: t.title, artist: t.artist, cover: t.art || LOGO, ts: Date.now()});
-    }
-  }
-}
+</div>
+</div>
 
-/* ===== FETCH CON PROXY CORS ===== */
-async function fetchWithCors(url){
-  for(const proxy of CORS_PROXIES){
-    try{
-      const fullUrl = proxy ? proxy + encodeURIComponent(url) : url;
-      const r = await fetch(fullUrl, {cache: "no-store"});
-      if(r.ok){
-        const text = await r.text();
-        try{ return JSON.parse(text); }
-        catch(e){ 
-          // Si no es JSON, devolver texto
-          return {_raw: text, _url: url};
-        }
-      }
-    }catch(e){
-      // Continuar con el siguiente proxy
-    }
-  }
-  throw new Error("Todos los proxies fallaron");
-}
+<!-- Toast -->
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(30,31,40,.95);backdrop-filter:blur(12px);color:#f5f5f7;padding:12px 20px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid rgba(255,255,255,.1);box-shadow:0 10px 40px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.34,1.56,.64,1);z-index:9999;">Listo</div>
 
-/* ===== POLLING DE METADATA ===== */
-async function pollMetadata(){
-  for(const getUrl of METADATA_SOURCES){
-    try{
-      const url = getUrl();
-      const d = await fetchWithCors(url);
-      
-      // Si es la URL de history de Zeno
-      if(url.includes("/history") && Array.isArray(d)){
-        mergeApiHistory(d);
-        // Intentar obtener el actual (primero de la lista)
-        if(d.length > 0){
-          const current = normalizeMetadata(d[0]);
-          if(current) setTrack(current, current.art || null);
-        }
-        return true;
-      }
-      
-      // StreamAfrica: puede tener history
-      if(d && Array.isArray(d.history)){
-        mergeApiHistory(d.history);
-      }
-      
-      // Normalizar y establecer track actual
-      const t = normalizeMetadata(d);
-      if(t){
-        setTrack(t, t.art || null);
-        return true;
-      }
-    }catch(e){
-      // Continuar con la siguiente fuente
-    }
-  }
-  
-  // Si nada funcionó, intentar extraer metadata directamente del stream de audio
-  tryPollAudioMetadata();
-  return false;
-}
-
-/* ===== INTENTAR OBTENER METADATA DEL AUDIO ===== */
-function tryPollAudioMetadata(){
-  try{
-    // Algunos navegadores exponen metadatos ICY
-    if(audio.getMetadata){
-      const meta = audio.getMetadata();
-      const t = normalizeMetadata(meta);
-      if(t) setTrack(t, null);
-    }
-  }catch(e){}
-}
-
-/* ===== CONEXIÓN DE METADATA ===== */
-let metadataTimer = null;
-
-async function connectMetadata(){
-  // Primera carga inmediata
-  await pollMetadata();
-  
-  // Configurar polling cada 8 segundos
-  if(metadataTimer) clearInterval(metadataTimer);
-  metadataTimer = setInterval(pollMetadata, 8000);
-  
-  // Intentar EventSource de Zeno como bonus
-  try{
-    const es = new EventSource("https://api.zeno.fm/mounts/metadata/subscribe/" + ZENO_MOUNT);
-    es.onmessage = e => {
-      try{
-        const d = JSON.parse(e.data);
-        const t = normalizeMetadata(d);
-        if(t) setTrack(t, t.art || null);
-      }catch(err){}
-    };
-    es.onerror = () => { try{ es.close(); }catch(_){} };
-  }catch(e){}
-}
-
-/* ===== INSTALL PWA ===== */
-let deferredPrompt=null;
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  install.classList.remove("hidden");
-});
-install.onclick = async () => {
-  if(!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  install.classList.add("hidden");
-};
-
-if("serviceWorker" in navigator){
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-  });
-}
-
-/* ===== MEDIA SESSION ===== */
-if("mediaSession" in navigator){
-  try{
-    navigator.mediaSession.setActionHandler("play", () => startPlayback());
-    navigator.mediaSession.setActionHandler("pause", () => stopPlayback());
-    navigator.mediaSession.setActionHandler("stop", () => stopPlayback());
-  }catch(e){}
-}
-
-/* ===== INICIALIZACIÓN ===== */
-// Renderizar historial guardado inmediatamente
-renderHistory();
-
-// Conectar metadata
-connectMetadata();
-
-// Si es archivo local, advertir
-if(location.protocol === "file:" || location.protocol === "content:"){
-  console.warn("sikodark: abre esta versión desde GitHub Pages para obtener metadata y carátulas.");
-  // Para pruebas locales: agregar datos de ejemplo al historial si está vacío
-  if(history.length === 0){
-    console.log("Modo demo: historial vacío. Agrega canciones desde GitHub Pages.");
-  }
-}
-
-</script>
 </body>
+
+<script>
+(function(){
+  const styleEl = document.createElement('style');
+  styleEl.textContent = `
+    @keyframes pulse{50%{opacity:.35}}
+    #playBtn:hover{transform:scale(1.05);box-shadow:0 8px 24px rgba(255,138,36,.3);}
+    #playBtn:active{transform:scale(.94);}
+    #muteBtn:hover{color:#f5f5f7;background:#2c2d35;}
+    #refreshBtn:hover{color:#f5f5f7;background:#34353d;}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:#ff8a24;cursor:pointer;box-shadow:0 2px 8px rgba(255,138,36,.25);transition:transform .15s;}
+    input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+    .track{overflow:hidden;border-radius:14px;background:#2c2d35;transition:transform .2s ease,box-shadow .2s,background .2s;position:relative;}
+    .track:hover{background:#2a2b35;transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25);}
+    .track-art{position:relative;aspect-ratio:1;overflow:hidden;}
+    @supports not (aspect-ratio:1){.track-art{padding-top:100%;height:0;}.track-art img{position:absolute;top:0;left:0;}}
+    .track-art img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease;}
+    .track:hover .track-art img{transform:scale(1.05);}
+    .share-btn{position:absolute;top:8px;left:50%;transform:translateX(-50%) scale(.6);width:34px;height:34px;border-radius:50%;background:#ff8a24;display:grid;place-items:center;opacity:0;transition:all .2s ease;border:0;cursor:pointer;padding:0;z-index:2;}
+    .track:hover .share-btn{opacity:1;transform:translateX(-50%) scale(1);}
+    .share-btn:hover{background:#ff9f4a;transform:translateX(-50%) scale(1.12) !important;}
+    .share-btn:active{transform:translateX(-50%) scale(.92) !important;}
+    .share-btn svg{width:16px;height:16px;fill:none;stroke:#1a1a1a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+    .rank{position:absolute;left:8px;bottom:8px;border-radius:999px;background:rgba(23,24,32,.85);padding:4px 8px;font:11px ui-monospace,Menlo,monospace;font-weight:700;border:1px solid rgba(255,255,255,.08);color:#f5f5f7;}
+    .track-info{padding:12px;}
+    .track-title,.track-artist{margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .track-title{font-size:13px;font-weight:700;letter-spacing:-.01em;color:#f5f5f7;}
+    .track-artist{font-size:11px;color:#a5a6ad;margin-top:3px;}
+    #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    @media (min-width:1280px){.wrap{max-width:520px;}#titleNow{font-size:24px;}#artistNow{font-size:16px;}#playBtn{width:76px;height:76px;flex:0 0 76px;}.track-title{font-size:15px;}.track-artist{font-size:12px;}}
+  `;
+  document.head.appendChild(styleEl);
+
+  const LOGO_SIKODARK = "https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/667338460afb4a77bfb024b5f6fd3773.jpeg";
+  const sampleHistory = [
+    {title:"Eclipse Serenade", artist:"Mountain Echoes", cover:"https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/90cc1b3c5c474beb86defef817a4ee76.jpeg"},
+    {title:"Neon Circuit", artist:"Volt Runners", cover:"https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/4582bfe68243451fad4d779bbbf831cb.jpeg"},
+    {title:"Fiesta Tropical", artist:"Mariana Lopez", cover:"https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/8c3cc31743e248eba1e84378a8db9e47.jpeg"},
+    {title:"Ethereal Ballads", artist:"Luna Sky", cover:"https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/06001fdec095451eb24f36e72277a80d.jpeg"},
+    {title:"Acoustic Memories", artist:"The Wanderers", cover:"https://p16-flow-image-sign.ibyteimg.com/tos-mya-i-3rsxbfecgb/rc_gen_image/45144c62808a47938445fdc6fee7fcf2.jpeg"},
+  ];
+
+  let isPlaying = true, currentSongIdx = 0, muted = false, toastTimer = null;
+  const historyGrid = document.getElementById('historyGrid');
+  const toast = document.getElementById('toast');
+  const playBtn = document.getElementById('playBtn');
+  const iconPlay = playBtn.querySelector('.icon-play');
+  const iconPause = playBtn.querySelector('.icon-pause');
+  const statusBadge = document.getElementById('statusBadge');
+  const statusText = document.getElementById('statusText');
+  const coverImg = document.getElementById('coverImg');
+  const titleNow = document.getElementById('titleNow');
+  const artistNow = document.getElementById('artistNow');
+  const countLabel = document.getElementById('countLabel');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const muteBtn = document.getElementById('muteBtn');
+
+  function showToast(msg, d=2200){toast.textContent=msg;toast.classList.add('show');if(toastTimer)clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),d);}
+  function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+  function renderHistory(){
+    countLabel.textContent=sampleHistory.length+"/10 temas";
+    historyGrid.innerHTML=sampleHistory.map((x,i)=>`
+      <article class="track">
+        <div class="track-art">
+          <img src="${esc(x.cover)}" alt="Carátula de ${esc(x.title)}" loading="lazy" onerror="this.onerror=null;this.src='${LOGO_SIKODARK}'">
+          <button class="share-btn" data-idx="${i}" aria-label="Compartir ${esc(x.title)}" title="Compartir">
+            <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </button>
+          <span class="rank">#${i+1}</span>
+        </div>
+        <div class="track-info"><p class="track-title">${esc(x.title)}</p><p class="track-artist">${esc(x.artist||"sikodark radio")}</p></div>
+      </article>
+    `).join("");
+    historyGrid.querySelectorAll('.share-btn').forEach(btn=>{
+      btn.onclick=async(e)=>{
+        e.stopPropagation();
+        const t=sampleHistory[parseInt(btn.dataset.idx)];
+        const text=`${t.title}${t.artist?` - ${t.artist}`:""}\n\nEscuchandola en sikodark radio`;
+        const title=t.artist?`${t.artist} - ${t.title}`:t.title;
+        if(navigator.share){try{await navigator.share({title,text,url:location.href});showToast("Compartido!");return;}catch(err){if(err.name==="AbortError")return;}}
+        try{await navigator.clipboard.writeText(`${text}\n${location.href}`);showToast("Copiado al portapapeles");}catch(err){showToast("No se pudo compartir");}
+      };
+    });
+  }
+
+  function setPlayingUI(v){
+    isPlaying=v;
+    iconPlay.style.opacity=v?"0":"1";iconPlay.style.transform=v?"scale(.6)":"translateX(2px) scale(1)";
+    iconPause.style.opacity=v?"1":"0";iconPause.style.transform=v?"scale(1)":"scale(.6)";
+    playBtn.setAttribute("aria-label",v?"Pausar":"Reproducir");
+    statusBadge.style.background=v?"rgba(255,138,36,.14)":"#2c2d35";
+    statusBadge.style.color=v?"#ff8a24":"#a5a6ad";
+    statusText.textContent=v?"En vivo":"Detenido";
+    const dot=statusBadge.querySelector('span:first-child');
+    dot.style.background=v?"#ff8a24":"#a5a6ad";
+    dot.style.animation=v?"pulse 1.2s infinite":"none";
+  }
+
+  playBtn.onclick=()=>{setPlayingUI(!isPlaying);showToast(isPlaying?"Reproduciendo":"Pausa");};
+  refreshBtn.onclick=()=>{
+    refreshBtn.textContent="↻ Buscando...";refreshBtn.disabled=true;
+    setTimeout(()=>{
+      currentSongIdx=(currentSongIdx+1)%sampleHistory.length;
+      const s=sampleHistory[currentSongIdx];
+      coverImg.style.opacity="0";
+      setTimeout(()=>{coverImg.src=s.cover;titleNow.textContent=s.title;artistNow.textContent=s.artist;coverImg.onload=()=>coverImg.style.opacity="1";},150);
+      refreshBtn.textContent="↻ Actualizar metadata";refreshBtn.disabled=false;
+      showToast("Metadata actualizada");
+    },700);
+  };
+  muteBtn.onclick=()=>{muted=!muted;muteBtn.style.color=muted?"#ff8a24":"";showToast(muted?"Silenciado":"Sonido activado");};
+
+  renderHistory();
+  setPlayingUI(true);
+})();
+</script>
 </html>
